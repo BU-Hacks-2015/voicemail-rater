@@ -8,6 +8,11 @@ package bu.hacks.project;
 /**
  *
  * @author Naib
+ * @author Hung
+ * @author Cindy
+ * @author Oliver
+ * @author Dan
+ *
  */
 public class BUHacksProject {
 
