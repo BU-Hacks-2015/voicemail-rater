@@ -105,17 +105,17 @@ if (!('webkitSpeechRecognition' in window)) {
   recognition.onstart = function() {
     recognizing = true;
     showInfo('info_speak_now');
-    start_img.src = '/intl/en/chrome/assets/common/images/content/mic-animate.gif';
+    start_img.src = 'img/phone.png';
   };
 
   recognition.onerror = function(event) {
     if (event.error == 'no-speech') {
-      start_img.src = '/intl/en/chrome/assets/common/images/content/mic.gif';
+      start_img.src = 'img/phone.png';
       showInfo('info_no_speech');
       ignore_onend = true;
     }
     if (event.error == 'audio-capture') {
-      start_img.src = '/intl/en/chrome/assets/common/images/content/mic.gif';
+      start_img.src = 'img/phone.png';
       showInfo('info_no_microphone');
       ignore_onend = true;
     }
@@ -134,7 +134,7 @@ if (!('webkitSpeechRecognition' in window)) {
     if (ignore_onend) {
       return;
     }
-    start_img.src = '/intl/en/chrome/assets/common/images/content/mic.gif';
+    start_img.src = 'img/phone.png';
     if (!final_transcript) {
       showInfo('info_start');
       return;
