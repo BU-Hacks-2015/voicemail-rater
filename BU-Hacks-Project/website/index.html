@@ -39,12 +39,10 @@
           </p>
         </div>
         <div id="div_start">
-          <button id="start_button" onclick="startButton(event)"><img alt="Start" id="start_img"
-          src="img/phone.png"></button>
+          <button id="start_button" onclick="startButton(event)"><img alt="Start" id="start_img" src="img/phone.png"></button>
         </div>
         
          <video autoplay></video>
-         
          <script language='JavaScript'>
         document.getElementById('capture').onclick = function() {
          var video = document.querySelector('video');
@@ -63,6 +61,12 @@
             </select>&nbsp;&nbsp; <select id="select_dialect"></select>
         </div>
         <div id="speech_rating"> </div>	
+        <div id="tele-background" class="transition"></div>
+        <div id="tele-wrapper">
+          <div id="teleprompter" class="transition">
+<!--             <p>Some people live for the fortune. Some people live just for the fame. Some people live for the power, yeah. Some people live just to play the game. Some people think that the physical things. Define what's within. And I've been there before. But that life's a bore. So full of the superficial</p> -->
+          </div>
+        </div>
       </div>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>

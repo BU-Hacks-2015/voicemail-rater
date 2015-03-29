@@ -111,17 +111,17 @@ var test = "I am happy to join with you today in what will go down in history as
       });
       
         for(var i=0,text; text=initialTexts[i]; i++) {
-          // Creates a sample document which need to be processed on Semantria
-          var id = Math.floor(Math.random() * 10000000);
-          // Queues document for processing on Semantria service
-          var status = SemantriaActiveSession.queueDocument({
-            id: id,
-            text: text
-          });
+          // // Creates a sample document which need to be processed on Semantria
+          // var id = Math.floor(Math.random() * 10000000);
+          // // Queues document for processing on Semantria service
+          // var status = SemantriaActiveSession.queueDocument({
+          //   id: id,
+          //   text: text
+          // });
             
           // Check status from Semantria service
           if (status == 202) {
-            log("Document# " + id + " queued successfully");
+            log("queued successfully");
           }
         }
 

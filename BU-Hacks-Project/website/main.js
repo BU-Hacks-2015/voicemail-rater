@@ -1,3 +1,5 @@
+var teleprompter = "Some people live for the fortune. Some people live just for the fame. Some people live for the power, yeah. Some people live just to play the game. Some people think that the physical things. Define what's within. And I've been there before. But that life's a bore. So full of the superficial. Some people want it all. But I don't want nothing at all If it ain't you baby If I ain't got you baby. Some people want diamond rings. Some just want everything. But everything means nothing. If I ain't got you, Yeah"
+
 var langs =
 [['Afrikaans',       ['af-ZA']],
  ['Bahasa Indonesia',['id-ID']],
@@ -111,12 +113,19 @@ function capitalize(s) {
   return s.replace(first_char, function(m) { return m.toUpperCase(); });
 }
 
+var start_m;
+var start_s;
+var start_d;
 
 function startButton(event) {
   if (recognizing) {
     recognition.stop();
     return;
   }
+  start_m = new Date().getMinutes();
+  start_s = new Date().getSeconds();
+  start_d = new Date().getMilliseconds();
+  teleControl();
   final_transcript = '';
   recognition.lang = select_dialect.value;
   recognition.start();
@@ -187,8 +196,13 @@ if (!('webkitSpeechRecognition' in window)) {
 
   recognition.onend = function() {
     recognizing = false;
-    console.log("wordArray: " + wordArray);
-    console.log(final_transcript);
+    var end_m = new Date().getMinutes();
+    var end_s = new Date().getSeconds();
+    var end_d = new Date().getMilliseconds();
+    // console.log("total time = " + ((end_m*6000 + end_s*1000 + end_d) - (start_m*6000 + start_s*1000 + start_d)));
+
+    // console.log("wordArray: " + wordArray);
+    // console.log(final_transcript);
     //recording is complete:
     wordReader();
     runTestApp(final_transcript);
@@ -239,16 +253,26 @@ if (!('webkitSpeechRecognition' in window)) {
             // for (var i = 0; i < splitWords.length; i++){
             //     wordArray.push(splitWords[i]);
             // }
-            wordArray = interim; 
-            console.log("wordArray: " + wordArray);
+            wordArray = interim_transcript; 
+            // console.log("wordArray: " + wordArray);
         }
         // console.log(interim + " " + interim.split(' ').length)
-        console.log(interim)
+        // console.log(interim)
                 // console.log(interim.split(' '))
 
       }
+        if(typeof(wordArray) === "string"){
+            position =  wordArray.split(" ").length;
+        } 
+        if(typeof(wordArray) === "array"){
+            position = wordArray.length;
+        }
+
+        teleControl();
+        console.log(position);
     }
 
+    interim_transcript.toLowerCase();
     if (final_transcript || interim_transcript) {
       showButtons('inline-block');
     }
@@ -262,10 +286,9 @@ if (!('webkitSpeechRecognition' in window)) {
     final_transcript = capitalize(final_transcript);
     final_span.innerHTML = linebreak(final_transcript);
     interim_span.innerHTML = linebreak(interim_transcript);
-
-
   };
 }
+
 
 var word_indexer = 0;
 var endWord = '';
@@ -305,7 +328,29 @@ var wordReader = function() {
     console.log("sort " + count_sort);
     console.log("kind " + count_kind);
 }
-
+var position = 0;
+var positionmarker = 0;
+var teleControl = function() {
+    $("#teleprompter").html(teleprompter);
+    $("#results").css("display","none");
+    $("#tele-background").css("opacity",0.55);
+    var windowHeight = $(window).height();
+    var tele_length = teleprompter.split(" ").length;
+    var teleHeight = $("#teleprompter").height();
+    var ratio = position/tele_length;
+    var top = (teleHeight-windowHeight)*ratio;
+    if(positionmarker!== position){
+        // console.log("windowHeight " + windowHeight);
+        // console.log("tele_length " + tele_length);
+        // console.log("ratio " + ratio);
+        // console.log("position " + position);
+        // console.log("top " + top);
+        // console.log(top);
+        $("#teleprompter").css("top",-top);
+        console.log("i am moving");
+    }
+    positionmarker = position;
+}
 // var getConfidence = function() {
 //     for()
 // }
