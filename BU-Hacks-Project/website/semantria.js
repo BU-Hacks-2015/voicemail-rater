@@ -28,9 +28,9 @@ var test = "I am happy to join with you today in what will go down in history as
       // Printing of document themes
       log("<div>Document themes:");
       if (data.themes) {
-        // for(var j=0, theme; theme=data.themes[j]; j++) {
-        //   log(SemantriaActiveSession.tpl("<div style='margin-left: 30px;'/>{title} (sentiment: {sentiment_score})", theme));
-        // }
+        for(var j=0, theme; theme=data.themes[j]; j++) {
+          log(SemantriaActiveSession.tpl("<div style='margin-left: 30px;'/>{title} (sentiment: {sentiment_score})", theme));
+        }
       } else {
         log("<div>No themes were extracted for this text");
       }
@@ -38,16 +38,16 @@ var test = "I am happy to join with you today in what will go down in history as
       // Printing of document entities
       log("<div>Entities:");
       if (data['entities']) {
-        // for(var j=0, entity; entity=data['entities'][j]; j++) {
-        //   log(SemantriaActiveSession.tpl(
-        //     "<div style='margin-left: 30px;'/>{title} : {entity_type} (sentiment: {sentiment_score})", entity
-        //   ));
-        // }
+        for(var j=0, entity; entity=data['entities'][j]; j++) {
+          log(SemantriaActiveSession.tpl(
+            "<div style='margin-left: 30px;'/>{title} : {entity_type} (sentiment: {sentiment_score})", entity
+          ));
+        }
       } else {
         log("<div> No entities were extracted for this text");
       }
       
-      // Printing of document entities
+      Printing of document entities
       log("<div> Topics:");
       if (data.topics) {
         for(var j=0, topic; topic=data.topics[j]; j++) {
@@ -96,17 +96,17 @@ var test = "I am happy to join with you today in what will go down in history as
 
         onRequest: function() {
           console.log("onRequest:");
-         // console.log(arguments);
+         console.log(arguments);
         },
 
         onResponse: function() {
           console.log("onResponse:");
-        //  console.log(arguments);
+         console.log(arguments);
         },
 
         onAfterResponse: function() {
           console.log("onAfterResponse:");
-        //  console.log(arguments);
+         console.log(arguments);
         }
       });
       
@@ -114,10 +114,10 @@ var test = "I am happy to join with you today in what will go down in history as
           // // Creates a sample document which need to be processed on Semantria
           // var id = Math.floor(Math.random() * 10000000);
           // // Queues document for processing on Semantria service
-          // var status = SemantriaActiveSession.queueDocument({
-          //   id: id,
-          //   text: text
-          // });
+          var status = SemantriaActiveSession.queueDocument({
+            id: id,
+            text: text
+          });
             
           // Check status from Semantria service
           if (status == 202) {

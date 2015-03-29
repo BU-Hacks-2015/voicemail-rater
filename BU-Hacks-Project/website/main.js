@@ -91,11 +91,11 @@ function updateCountry() {
   select_dialect.style.visibility = list[1].length == 1 ? 'hidden' : 'visible';
 }
 
-var create_email = false;
 var final_transcript = '';
 var recognizing = false;
 var ignore_onend;
 var start_timestamp;
+
 
 function upgrade() {
   start_button.style.visibility = 'hidden';
@@ -112,7 +112,7 @@ var first_char = /\S/;
 function capitalize(s) {
   return s.replace(first_char, function(m) { return m.toUpperCase(); });
 }
-
+var gameover = false;
 var start_m;
 var start_s;
 var start_d;
@@ -197,12 +197,16 @@ if (!('webkitSpeechRecognition' in window)) {
 
   recognition.onend = function() {
     recognizing = false;
+    gameover = true;
     var end_m = new Date().getMinutes();
     var end_s = new Date().getSeconds();
     var end_d = new Date().getMilliseconds();
     total_time = ((end_m*6000 + end_s*1000 + end_d) - (start_m*6000 + start_s*1000 + start_d));
 
     //recording is complete:
+    $("#tele-wrapper").css("display","none");
+    $("#tele-background").css("display","none");
+    clearInterval(interval);
     wordReader();
     runTestApp(final_transcript);
 
@@ -214,6 +218,7 @@ if (!('webkitSpeechRecognition' in window)) {
       showInfo('info_start');
       return;
     }
+    
     showInfo('');
     if (window.getSelection) {
       window.getSelection().removeAllRanges();
@@ -231,14 +236,13 @@ if (!('webkitSpeechRecognition' in window)) {
       upgrade();
       return;
     }
-
+    
     for (var i = event.resultIndex; i < event.results.length; ++i) {
       if (event.results[i].isFinal) {
         final_transcript += event.results[i][0].transcript;
       } else {
 
         interim_transcript += event.results[i][0].transcript;
-
 
         interim = event.results[i][0].transcript;
         confidence = event.results[i][0].confidence;
@@ -300,6 +304,7 @@ var count_like = 0;
 var count_um = 0;
 var count_sort = 0;
 var count_kind = 0;
+var count_curse = 0;
 
 // var lastWord = function(o) {
 //   return (""+o).replace(/[\s-]+$/,'').split(/[\s-]/).pop();;
@@ -314,7 +319,28 @@ var count_kind = 0;
 //     }
 // }
 
-var reset = function () 
+var reset = function () {
+    gameover = false;
+    count_like = 0;
+    count_um = 0;
+    count_sort = 0;
+    count_kind = 0;
+    word_indexer = 0;
+    endWord = '';
+    savedWord = '';
+    wordArray = [];
+    splitWords = [];
+    confidence = [];
+    total_time = 0;
+    create_email = false;
+    final_transcript = '';
+    recognizing = false;
+    start_timestamp = 0;
+    start_m = 0;
+    start_s = 0;
+    start_d = 0;
+}
+
 var wordReader = function() {
     if(wordArray > 0){
         splited = wordArray.split(" ");
@@ -323,21 +349,23 @@ var wordReader = function() {
         if (splited[i] === "um") count_um++;
         if (splited[i] === "sort" && splited[i+1] === "of") count_sort++;
         if (splited[i] === "kind" && splited[i+1] === "of") count_kind++;
+        if (splited[i][2] === "*") count_curse++;
         }
     }
     console.log("likes " + count_like);
     console.log("um " + count_um);
     console.log("sort " + count_sort);
     console.log("kind " + count_kind);
+    console.log("***" + count_curse); 
 }
 
 var position = 0;
 var positionmarker = 0;
+
 var teleControl = function() {
     $("#teleprompter").html(teleprompter);
     $("#teleprompter").css("opacity",1);
     $("#tele-background").css("opacity","0.5");
-    $("#results").css("display","none");
     var windowHeight = $(window).height();
     var tele_length = teleprompter.split(" ").length;
     var teleHeight = $("#teleprompter").height();
@@ -359,7 +387,6 @@ var display_tele = function() {
     $("#results").css("display","none");
     $("#tele-wrapper").css("display","block");
     $("#tele-background").css("display","block");
-
 }
 
 var display_subs = function() {
@@ -377,8 +404,9 @@ var scores = function () {
 var minutes = 0;
 var seconds = 0;
 
+var interval = 0;
 var start_time = function() {
-    var interval = window.setInterval( function() {
+    interval = window.setInterval( function() {
         if(seconds === 60){
             seconds = 0;
             minutes++
@@ -392,7 +420,7 @@ var start_time = function() {
         $("#timer p").html(minutes + ":" + display_seconds);
         seconds++;
     }, 1000 );
-}
+}   
 
 var time = true;
 
