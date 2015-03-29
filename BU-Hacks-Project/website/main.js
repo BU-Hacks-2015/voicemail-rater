@@ -316,24 +316,28 @@ var count_kind = 0;
 // }
 
 var wordReader = function() {
-    splited = wordArray.split(" ");
-    for (var i = 0; i < splited.length; i++){
+    if(wordArray > 0){
+        splited = wordArray.split(" ");
+        for (var i = 0; i < splited.length; i++){
         if (splited[i] === "like") count_like++;
         if (splited[i] === "um") count_um++;
         if (splited[i] === "sort" && splited[i+1] === "of") count_sort++;
         if (splited[i] === "kind" && splited[i+1] === "of") count_kind++;
+        }
     }
     console.log("likes " + count_like);
     console.log("um " + count_um);
     console.log("sort " + count_sort);
     console.log("kind " + count_kind);
 }
+
 var position = 0;
 var positionmarker = 0;
 var teleControl = function() {
     $("#teleprompter").html(teleprompter);
+    $("#teleprompter").css("opacity",1);
+    $("#tele-background").css("opacity","0.5");
     $("#results").css("display","none");
-    $("#tele-background").css("opacity",0.55);
     var windowHeight = $(window).height();
     var tele_length = teleprompter.split(" ").length;
     var teleHeight = $("#teleprompter").height();
@@ -347,11 +351,31 @@ var teleControl = function() {
         // console.log("top " + top);
         // console.log(top);
         $("#teleprompter").css("top",-top);
-        console.log("i am moving");
     }
     positionmarker = position;
 }
-// var getConfidence = function() {
-//     for()
-// }
+
+var display_tele = function() { 
+    $("#results").css("display","none");
+    $("#tele-wrapper").css("display","block");
+    $("#tele-background").css("display","block");
+
+}
+
+var display_subs = function() {
+    $("#results").css("display","block");
+    $("#tele-wrapper").css("display","none");
+    $("#tele-background").css("display","none");
+
+}
+//display screens with buttons 
+//teleprompter
+//subtitles
+//timer?
+//create reset button
+//better text
+//scoring
+// talking rate
+// sentiment
+// transitions
 

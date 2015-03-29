@@ -39,31 +39,38 @@
           </p>
         </div>
         <div id="div_start">
+          <!-- <p>Orator</p> -->
           <button id="start_button" onclick="startButton(event)"><img alt="Start" id="start_img" src="img/phone.png"></button>
         </div>
-        
-         <video autoplay></video>
-         <script language='JavaScript'>
+        <div id="video-background"></div>
+        <video autoplay></video>
+        <script language='JavaScript'>
         document.getElementById('capture').onclick = function() {
          var video = document.querySelector('video');
          var canvas = document.getElementById('canvas');
          }
          </script>
          <script src="webcam.js"></script>
-         
+        
         <div id="results" style="overflow-x: hidden; border:none;">
           <span class="final" id="final_span"></span> <span class="interim" id=
           "interim_span"></span>
         </div>
-
+        <div id="mode">
+          <button value="Teleprompter" onclick="display_tele()">Teleprompter</button>
+          <button value="Dictation" onclick="display_subs()">Dictation</button>
+          <button value="Free Session" onclick="display_tele()">Free Session</button>
+        </div>
+        <br>
         <div class="compact marquee" id="div_language">
           <select id="select_language" onchange="updateCountry()">
             </select>&nbsp;&nbsp; <select id="select_dialect"></select>
         </div>
-        <div id="speech_rating"> </div>	
+        <div id="speech_rating"></div>	
+        <div id="score"></div>
         <div id="tele-background" class="transition"></div>
         <div id="tele-wrapper">
-          <div id="teleprompter" class="transition">
+          <div id="teleprompter" class="transition2">
 <!--             <p>Some people live for the fortune. Some people live just for the fame. Some people live for the power, yeah. Some people live just to play the game. Some people think that the physical things. Define what's within. And I've been there before. But that life's a bore. So full of the superficial</p> -->
           </div>
         </div>
