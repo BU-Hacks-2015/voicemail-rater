@@ -187,9 +187,8 @@ if (!('webkitSpeechRecognition' in window)) {
 
   recognition.onend = function() {
     recognizing = false;
-    for(var i = 0; i < wordArray.length; i++){
-        console.log(wordArray[i])
-    }
+    console.log("wordArray: " + wordArray);
+    console.log(final_transcript);
     //recording is complete:
     wordReader();
     runTestApp(final_transcript);
@@ -219,63 +218,95 @@ if (!('webkitSpeechRecognition' in window)) {
       upgrade();
       return;
     }
+
     for (var i = event.resultIndex; i < event.results.length; ++i) {
       if (event.results[i].isFinal) {
         final_transcript += event.results[i][0].transcript;
       } else {
+
         interim_transcript += event.results[i][0].transcript;
+
+
+        interim = event.results[i][0].transcript;
+        confidence = event.results[i][0].confidence;
+
+
+        if(confidence > 0.5){
+            splitWords = interim.split(' ');
+            var difference = wordArray.length - splitWords.length;
+            
+            wordArray = [];
+            // for (var i = 0; i < splitWords.length; i++){
+            //     wordArray.push(splitWords[i]);
+            // }
+            wordArray = interim; 
+            console.log("wordArray: " + wordArray);
+        }
+        // console.log(interim + " " + interim.split(' ').length)
+        console.log(interim)
+                // console.log(interim.split(' '))
+
       }
     }
 
+    if (final_transcript || interim_transcript) {
+      showButtons('inline-block');
+    }
     //adding words to the array
 
-    endWord = lastWord(interim_transcript);
-    console.log(interim_transcript);
-    addWord(endWord);
+    // endWord = lastWord(interim_transcript);
+    // addWord(endWord);
 
-    savedWord = endWord;
+    // savedWord = endWord;
     
     final_transcript = capitalize(final_transcript);
     final_span.innerHTML = linebreak(final_transcript);
     interim_span.innerHTML = linebreak(interim_transcript);
 
 
-
-    if (final_transcript || interim_transcript) {
-      showButtons('inline-block');
-    }
   };
 }
 
+var word_indexer = 0;
 var endWord = '';
 var savedWord = '';
 var wordArray = [];
+var splitWords = [];
+var confidence = [];
+
 var count_like = 0;
 var count_um = 0;
 var count_sort = 0;
 var count_kind = 0;
 
-var lastWord = function(o) {
-  return (""+o).replace(/[\s-]+$/,'').split(/[\s-]/).pop();;
-};
+// var lastWord = function(o) {
+//   return (""+o).replace(/[\s-]+$/,'').split(/[\s-]/).pop();;
+// };
 
-var addWord = function(o) {
-    if (o === savedWord) {
-    } else {
-     wordArray.push(o);
-    }
-}
+// var addWord = function(o) {
+//     if (o === savedWord) {
+//         return false;
+//     } else {
+
+//     return true;
+//     }
+// }
 
 var wordReader = function() {
-    for (var i = 0; i < wordArray.length; i++){
-        if (wordArray[i] === "like") count_like++;
-        if (wordArray[i] === "um") count_um++;
-        if (wordArray[i] === "sort" && wordArray[i+1] === "of") count_sort++;
-        if (wordArray[i] === "kind" && wordArray[i+1] === "of") count_kind++;
+    splited = wordArray.split(" ");
+    for (var i = 0; i < splited.length; i++){
+        if (splited[i] === "like") count_like++;
+        if (splited[i] === "um") count_um++;
+        if (splited[i] === "sort" && splited[i+1] === "of") count_sort++;
+        if (splited[i] === "kind" && splited[i+1] === "of") count_kind++;
     }
     console.log("likes " + count_like);
     console.log("um " + count_um);
     console.log("sort " + count_sort);
     console.log("kind " + count_kind);
 }
+
+// var getConfidence = function() {
+//     for()
+// }
 
