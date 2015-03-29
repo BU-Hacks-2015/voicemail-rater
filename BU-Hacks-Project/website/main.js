@@ -190,7 +190,10 @@ if (!('webkitSpeechRecognition' in window)) {
     for(var i = 0; i < wordArray.length; i++){
         console.log(wordArray[i])
     }
+    //recording is complete:
+    wordReader();
     runTestApp(final_transcript);
+
     if (ignore_onend) {
       return;
     }
@@ -247,6 +250,10 @@ if (!('webkitSpeechRecognition' in window)) {
 var endWord = '';
 var savedWord = '';
 var wordArray = [];
+var count_like = 0;
+var count_um = 0;
+var count_sort = 0;
+var count_kind = 0;
 
 var lastWord = function(o) {
   return (""+o).replace(/[\s-]+$/,'').split(/[\s-]/).pop();;
@@ -259,4 +266,16 @@ var addWord = function(o) {
     }
 }
 
+var wordReader = function() {
+    for (var i = 0; i < wordArray.length; i++){
+        if (wordArray[i] === "like") count_like++;
+        if (wordArray[i] === "um") count_um++;
+        if (wordArray[i] === "sort" && wordArray[i+1] === "of") count_sort++;
+        if (wordArray[i] === "kind" && wordArray[i+1] === "of") count_kind++;
+    }
+    console.log("likes " + count_like);
+    console.log("um " + count_um);
+    console.log("sort " + count_sort);
+    console.log("kind " + count_kind);
+}
 
