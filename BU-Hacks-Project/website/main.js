@@ -122,6 +122,7 @@ function startButton(event) {
     recognition.stop();
     return;
   }
+  start_time();
   start_m = new Date().getMinutes();
   start_s = new Date().getSeconds();
   start_d = new Date().getMilliseconds();
@@ -199,10 +200,8 @@ if (!('webkitSpeechRecognition' in window)) {
     var end_m = new Date().getMinutes();
     var end_s = new Date().getSeconds();
     var end_d = new Date().getMilliseconds();
-    // console.log("total time = " + ((end_m*6000 + end_s*1000 + end_d) - (start_m*6000 + start_s*1000 + start_d)));
+    total_time = ((end_m*6000 + end_s*1000 + end_d) - (start_m*6000 + start_s*1000 + start_d));
 
-    // console.log("wordArray: " + wordArray);
-    // console.log(final_transcript);
     //recording is complete:
     wordReader();
     runTestApp(final_transcript);
@@ -288,7 +287,7 @@ if (!('webkitSpeechRecognition' in window)) {
     interim_span.innerHTML = linebreak(interim_transcript);
   };
 }
-
+var total_time;
 
 var word_indexer = 0;
 var endWord = '';
@@ -315,6 +314,7 @@ var count_kind = 0;
 //     }
 // }
 
+var reset = function () 
 var wordReader = function() {
     if(wordArray > 0){
         splited = wordArray.split(" ");
@@ -368,11 +368,47 @@ var display_subs = function() {
     $("#tele-background").css("display","none");
 
 }
-//display screens with buttons 
-//teleprompter
-//subtitles
-//timer?
-//create reset button
+
+var scores = function () { 
+
+
+}
+
+var minutes = 0;
+var seconds = 0;
+
+var start_time = function() {
+    var interval = window.setInterval( function() {
+        if(seconds === 60){
+            seconds = 0;
+            minutes++
+        }
+        var display_seconds = "";
+        if(seconds < 10){
+            display_seconds = "0" + seconds;
+        } else {
+            display_seconds = seconds;
+        }
+        $("#timer p").html(minutes + ":" + display_seconds);
+        seconds++;
+    }, 1000 );
+}
+
+var time = true;
+
+var display_timer = function () {
+    if (time) {
+      $("#timer p").css("display","none")
+      time = false  
+      console.log("hello")
+    }  else {
+        $("#timer p").css("display","block");
+        time = true;
+    }
+}
+
+//create 
+// button
 //better text
 //scoring
 // talking rate
