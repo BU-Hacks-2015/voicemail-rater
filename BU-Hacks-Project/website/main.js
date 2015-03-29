@@ -1,0 +1,359 @@
+var langs =
+[['Afrikaans',       ['af-ZA']],
+ ['Bahasa Indonesia',['id-ID']],
+ ['Bahasa Melayu',   ['ms-MY']],
+ ['Català',          ['ca-ES']],
+ ['Čeština',         ['cs-CZ']],
+ ['Dansk',           ['da-DK']],
+ ['Deutsch',         ['de-DE']],
+ ['English',         ['en-AU', 'Australia'],
+                     ['en-CA', 'Canada'],
+                     ['en-IN', 'India'],
+                     ['en-NZ', 'New Zealand'],
+                     ['en-ZA', 'South Africa'],
+                     ['en-GB', 'United Kingdom'],
+                     ['en-US', 'United States']],
+ ['Español',         ['es-AR', 'Argentina'],
+                     ['es-BO', 'Bolivia'],
+                     ['es-CL', 'Chile'],
+                     ['es-CO', 'Colombia'],
+                     ['es-CR', 'Costa Rica'],
+                     ['es-EC', 'Ecuador'],
+                     ['es-SV', 'El Salvador'],
+                     ['es-ES', 'España'],
+                     ['es-US', 'Estados Unidos'],
+                     ['es-GT', 'Guatemala'],
+                     ['es-HN', 'Honduras'],
+                     ['es-MX', 'México'],
+                     ['es-NI', 'Nicaragua'],
+                     ['es-PA', 'Panamá'],
+                     ['es-PY', 'Paraguay'],
+                     ['es-PE', 'Perú'],
+                     ['es-PR', 'Puerto Rico'],
+                     ['es-DO', 'República Dominicana'],
+                     ['es-UY', 'Uruguay'],
+                     ['es-VE', 'Venezuela']],
+ ['Euskara',         ['eu-ES']],
+ ['Filipino',        ['fil-PH']],
+ ['Français',        ['fr-FR']],
+ ['Galego',          ['gl-ES']],
+ ['Hrvatski',        ['hr_HR']],
+ ['IsiZulu',         ['zu-ZA']],
+ ['Íslenska',        ['is-IS']],
+ ['Italiano',        ['it-IT', 'Italia'],
+                     ['it-CH', 'Svizzera']],
+ ['Lietuvių',        ['lt-LT']],
+ ['Magyar',          ['hu-HU']],
+ ['Nederlands',      ['nl-NL']],
+ ['Norsk bokmål',    ['nb-NO']],
+ ['Polski',          ['pl-PL']],
+ ['Português',       ['pt-BR', 'Brasil'],
+                     ['pt-PT', 'Portugal']],
+ ['Română',          ['ro-RO']],
+ ['Slovenščina',     ['sl-SI']],
+ ['Slovenčina',      ['sk-SK']],
+ ['Suomi',           ['fi-FI']],
+ ['Svenska',         ['sv-SE']],
+ ['Tiếng Việt',      ['vi-VN']],
+ ['Türkçe',          ['tr-TR']],
+ ['Ελληνικά',        ['el-GR']],
+ ['български',       ['bg-BG']],
+ ['Pусский',         ['ru-RU']],
+ ['Српски',          ['sr-RS']],
+ ['Українська',      ['uk-UA']],
+ ['한국어',            ['ko-KR']],
+ ['中文',             ['cmn-Hans-CN', '普通话 (中国大陆)'],
+                     ['cmn-Hans-HK', '普通话 (香港)'],
+                     ['cmn-Hant-TW', '中文 (台灣)'],
+                     ['yue-Hant-HK', '粵語 (香港)']],
+ ['日本語',           ['ja-JP']],
+ ['हिन्दी',            ['hi-IN']],
+ ['ภาษาไทย',         ['th-TH']]];
+
+for (var i = 0; i < langs.length; i++) {
+  select_language.options[i] = new Option(langs[i][0], i);
+}
+select_language.selectedIndex = 7;
+updateCountry();
+select_dialect.selectedIndex = 6;
+showInfo('info_start');
+
+function updateCountry() {
+  for (var i = select_dialect.options.length - 1; i >= 0; i--) {
+    select_dialect.remove(i);
+  }
+  var list = langs[select_language.selectedIndex];
+  for (var i = 1; i < list.length; i++) {
+    select_dialect.options.add(new Option(list[i][1], list[i][0]));
+  }
+  select_dialect.style.visibility = list[1].length == 1 ? 'hidden' : 'visible';
+}
+var create_email = false;
+var final_transcript = '';
+var recognizing = false;
+var ignore_onend;
+var start_timestamp;
+if (!('webkitSpeechRecognition' in window)) {
+  upgrade();
+} else {
+  start_button.style.display = 'inline-block';
+  var recognition = new webkitSpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  recognition.onstart = function() {
+    recognizing = true;
+    showInfo('info_speak_now');
+    start_img.src = 'img/phone.png';
+  };
+
+  recognition.onerror = function(event) {
+    if (event.error == 'no-speech') {
+      start_img.src = 'img/phone.png';
+      showInfo('info_no_speech');
+      ignore_onend = true;
+    }
+    if (event.error == 'audio-capture') {
+      start_img.src = 'img/phone.png';
+      showInfo('info_no_microphone');
+      ignore_onend = true;
+    }
+    if (event.error == 'not-allowed') {
+      if (event.timeStamp - start_timestamp < 100) {
+        showInfo('info_blocked');
+      } else {
+        showInfo('info_denied');
+      }
+      ignore_onend = true;
+    }
+  };
+
+  recognition.onend = function() {
+    recognizing = false;
+    runTestApp();
+    if (ignore_onend) {
+      return;
+    }
+    start_img.src = 'img/phone.png';
+    if (!final_transcript) {
+      showInfo('info_start');
+      return;
+    }
+    showInfo('');
+    if (window.getSelection) {
+      window.getSelection().removeAllRanges();
+      var range = document.createRange();
+      range.selectNode(document.getElementById('final_span'));
+      window.getSelection().addRange(range);
+    }
+  };
+
+  recognition.onresult = function(event) {
+    var interim_transcript = '';
+    if (typeof(event.results) == 'undefined') {
+      recognition.onend = null;
+      recognition.stop();
+      upgrade();
+      return;
+    }
+    for (var i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        final_transcript += event.results[i][0].transcript;
+      } else {
+        interim_transcript += event.results[i][0].transcript;
+      }
+    }
+    final_transcript = capitalize(final_transcript);
+    final_span.innerHTML = linebreak(final_transcript);
+    interim_span.innerHTML = linebreak(interim_transcript);
+    if (final_transcript || interim_transcript) {
+      showButtons('inline-block');
+    }
+  };
+}
+
+function upgrade() {
+  start_button.style.visibility = 'hidden';
+  showInfo('info_upgrade');
+}
+
+var two_line = /\n\n/g;
+var one_line = /\n/g;
+function linebreak(s) {
+  return s.replace(two_line, '<p></p>').replace(one_line, '<br>');
+}
+
+var first_char = /\S/;
+function capitalize(s) {
+  return s.replace(first_char, function(m) { return m.toUpperCase(); });
+}
+
+
+function startButton(event) {
+  if (recognizing) {
+    recognition.stop();
+    //call semantria
+    //runTestApp();
+    return;
+  }
+  final_transcript = '';
+  recognition.lang = select_dialect.value;
+  recognition.start();
+  ignore_onend = false;
+  final_span.innerHTML = '';
+  interim_span.innerHTML = '';
+  start_img.src = 'img/phone.png';
+  showInfo('info_allow');
+  showButtons('none');
+  start_timestamp = event.timeStamp;
+}
+
+function showInfo(s) {
+  if (s) {
+    for (var child = info.firstChild; child; child = child.nextSibling) {
+      if (child.style) {
+        child.style.display = child.id == s ? 'inline' : 'none';
+      }
+    }
+    info.style.visibility = 'visible';
+  } else {
+    info.style.visibility = 'hidden';
+  }
+}
+
+var current_style;
+function showButtons(style) {
+  if (style == current_style) {
+    return;
+  }
+  current_style = style;
+}
+
+
+/************************************
+SEMANTRIA CODE
+*************************************/
+
+var test = "I am happy to join with you today in what will go down in history as the greatest demonstration for freedom in the history of our nation. Five score years ago, a great American, in whose symbolic shadow we stand today, signed the Emancipation Proclamation. This momentous decree came as a great beacon light of hope to millions of Negro slaves who had been seared in the flames of withering injustice. It came as a joyous daybreak to end the long night of their captivity."
+;(function (){
+
+  var consumerKey = "570d49f2-d717-4dd8-ad1f-ed64d98697f3";
+  var consumerSecret = "4ec66d89-40a6-4ebd-965f-669d6a8a3e4c";
+
+  function log(message) {
+    $("#speech_rating").append(message + "<br/>");
+  }
+  
+  function getInitialText() {
+    var result = [];
+    //final text from the recording added here
+    //result.push(final_transcript);
+    result.push(test)
+    return result;
+  }
+
+  function processResponse(analyticData) {
+    for(var i=0, data;data=analyticData[i];i++) {
+      // Printing of document sentiment score
+      log(SemantriaActiveSession.tpl("Document {id}. Sentiment score: {sentiment_score}", data));
+      // Printing of document themes
+      log("<div style='margin-left: 15px;'/>Document themes:");
+      if (data.themes) {
+        for(var j=0, theme; theme=data.themes[j]; j++) {
+          log(SemantriaActiveSession.tpl("<div style='margin-left: 30px;'/>{title} (sentiment: {sentiment_score})", theme));
+        }
+      } else {
+        log("<div style='margin-left: 30px;'/>No themes were extracted for this text");
+      }
+
+      // Printing of document entities
+      log("<div style='margin-left: 15px;'/>Entities:");
+      if (data['entities']) {
+        for(var j=0, entity; entity=data['entities'][j]; j++) {
+          log(SemantriaActiveSession.tpl(
+            "<div style='margin-left: 30px;'/>{title} : {entity_type} (sentiment: {sentiment_score})", entity
+          ));
+        }
+      } else {
+        log("<div style='margin-left: 30px;'/>No entities were extracted for this text");
+      }
+      
+      // Printing of document entities
+      log("<div style='margin-left: 15px;'/>Topics:");
+      if (data.topics) {
+        for(var j=0, topic; topic=data.topics[j]; j++) {
+          log(SemantriaActiveSession.tpl(
+            "<div style='margin-left: 30px;'/>{title} : {type} (strength: {sentiment_score})", topic
+          ));
+        }
+      } else {
+        log("<div style='margin-left: 30px;'/>No topics were extracted for this text");
+      }
+    }
+}
+    function receiveResponse(entitiesCount) {
+      // As Semantria isn't real-time solution you need to wait some time before getting of the processed results
+      // Wait ten seconds while Semantria process queued document
+
+      var analyticData = [];
+      var timeout = setInterval(function() {
+        log("Retrieving your processed results...");
+        // Requests processed results from Semantria service
+        var processedDocuments = SemantriaActiveSession.getProcessedDocuments();
+
+        if (processedDocuments && processedDocuments.length) {
+          analyticData = analyticData.concat(processedDocuments);
+        }
+
+        if(analyticData.length == entitiesCount) {
+          clearInterval(timeout);
+          processResponse(analyticData);
+        } 
+      }, 2000);
+    }
+
+    window.runTestApp = function(){
+      var initialTexts = getInitialText();
+      
+      // session is a global object
+      SemantriaActiveSession = new Semantria.Session(consumerKey, consumerSecret, "MakeBU");
+      SemantriaActiveSession.override({
+        onError: function() {
+          console.warn("onError:");
+          console.warn(arguments);
+        },
+
+        onRequest: function() {
+          console.log("onRequest:");
+          console.log(arguments);
+        },
+
+        onResponse: function() {
+          console.log("onResponse:");
+          console.log(arguments);
+        },
+
+        onAfterResponse: function() {
+          console.log("onAfterResponse:");
+          console.log(arguments);
+        }
+      });
+      
+        for(var i=0,text; text=initialTexts[i]; i++) {
+          // Creates a sample document which need to be processed on Semantria
+          var id = Math.floor(Math.random() * 10000000);
+          // Queues document for processing on Semantria service
+          var status = SemantriaActiveSession.queueDocument({
+            id: id,
+            text: text
+          });
+            
+          // Check status from Semantria service
+          if (status == 202) {
+            log("Document# " + id + " queued successfully");
+          }
+        }
+
+        receiveResponse(initialTexts.length);
+      }
+})();

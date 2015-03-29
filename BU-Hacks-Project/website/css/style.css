@@ -14,6 +14,7 @@
 
 #speech_rating{
     overflow:scroll;
-    min-height: 300px;
+    max-height: 150px;
     width:100%;
+    border: 2px blue dotted;
 }
